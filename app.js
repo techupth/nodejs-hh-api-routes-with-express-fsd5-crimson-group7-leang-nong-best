@@ -1,7 +1,9 @@
 // Start coding here
 import express from "express";
 import { assignments } from "./data/assignments.js";
+import { comments } from "./data/comments.js";
 
+let commentsDataBase = comments;
 let assignmentsDataBase = assignments;
 
 const app = express();
@@ -15,13 +17,14 @@ app.get("/assignments", function (req, res) {
 
   if (limit > 10) {
     return res.status(401).json({
-      message: "Invalid request. Can fetch up to 10 posts per request.",
+      message: "Invalid request,limit must not exceeds 10 assignments",
     });
   }
 
   const assignments = assignmentsDataBase.slice(0, limit);
 
   return res.json({
+    message: "Complete Fetching assignments",
     data: assignments,
   });
 });
@@ -32,7 +35,19 @@ app.get("/assignments/:assignmentsId", function (req, res) {
     (item) => item.id === assignmentsIdFromClient
   );
   return res.json({
+    message: "Complete Fetching assignments",
     data: assignmentData[0],
+  });
+});
+
+app.get("/assignments/:assignmentsId/comments", function (req, res) {
+  let assignmentsIdFromClient = Number(req.params.assignmentsId);
+  let commentData = commentsDataBase.filter(
+    (item) => item.id === assignmentsIdFromClient
+  );
+  return res.json({
+    message: "Complete fetching comments",
+    data: commentData[0],
   });
 });
 
@@ -42,7 +57,13 @@ app.post("/assignments", function (req, res) {
     ...req.body,
   });
   return res.json({
-    message: "Assignment has been created successfully",
+    message: "New assignment has been created successfully",
+    data: [
+      {
+        id: assignmentsDataBase[assignmentsDataBase.length - 1].id + 1,
+        ...req.body,
+      },
+    ],
   });
 });
 
@@ -53,7 +74,7 @@ app.delete("/assignments/:assignmentsId", function (req, res) {
   );
   assignmentsDataBase = newassignmentsData;
   return res.json({
-    message: "Assignment has been deleted successfully",
+    message: `Assignment Id: ${assignmentsIdFromClient} has been deleted successfully`,
   });
 });
 
@@ -67,7 +88,8 @@ app.put("/assignments/:assignmentsId", function (req, res) {
     ...req.body,
   };
   return res.json({
-    message: "Assignment has been updated successfully",
+    message: "Assignment Id : <assignmentsId>  has been updated successfully",
+    data: [{ id: assignmentsIdFromClient, ...req.body }],
   });
 });
 
