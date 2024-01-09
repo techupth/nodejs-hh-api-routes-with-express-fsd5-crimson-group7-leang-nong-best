@@ -1,6 +1,6 @@
 import express from "express";
-import { assignments } from "./data/assignments.js";
-import { comments } from "./data/comments.js";
+import { assignments } from "../data/assignments.js";
+import { comments } from "../data/comments.js";
 
 let assignmentsMockDatabase = assignments;
 let commentsMockDatabase = comments;
@@ -10,12 +10,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 app.get("/assignments", (req, res) => {
-  let limit = req.query.limit ;
+  let limit = req.query.limit;
   if (limit > 10) {
     return res.status(401).json({
       message: "Invalid request, limit must not exceeds 100 assignment.",
     });
-      }
+  }
   const assignmentsResult = assignmentsMockDatabase.slice(0, limit);
   return res.json({
     data: assignmentsResult,
@@ -185,7 +185,7 @@ app.get("/assignments/:assignmentId/comments", (req, res) => {
   }
 
   return res.json({
-   data: assignmentComments,
+    data: assignmentComments,
   });
 });
 
@@ -224,7 +224,6 @@ app.post("/assignments/:assignmentId/comments", (req, res) => {
 app.get("/", (req, res) => {
   return res.send("Test Root OK");
 });
-
 
 app.use((err, req, res, next) => {
   console.error(err.stack);
